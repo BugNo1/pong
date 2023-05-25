@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/Main.qml</file>
+        <file>Theme/qmldir</file>
+        <file>Theme/Theme.qml</file>
+        <file>common-qml/CommonFunctions.js</file>
+        <file>common-qml/CountdownOverlay.qml</file>
+        <file>common-qml/CrossButton.qml</file>
+        <file>common-qml/GameEndOverlay.qml</file>
+        <file>common-qml/GameStartOverlay.qml</file>
+        <file>common-qml/GameStateMachine.qml</file>
+        <file>common-qml/PlayerNameInput.qml</file>
+        <file>common-media/countdown-end.wav</file>
+        <file>common-media/countdown.wav</file>
+        <file>common-media/highscore-music.mp3</file>
+        <file>common-media/highscore.png</file>
+        <file>common-media/highscore.wav</file>
+        <file>common-media/item-drop.wav</file>
+        <file>common-media/win.wav</file>
+        <file>common-media/winner.png</file>
+    </qresource>
+</RCC>
