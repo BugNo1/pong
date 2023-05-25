@@ -1,0 +1,15 @@
+[submodule "pong-media"]
+	path = pong-media
+	url = git@github.com:BugNo1/pong-media.git
+[submodule "common-library"]
+	path = common-library
+	url = git@github.com:BugNo1/common-library.git
+[submodule "common-media"]
+	path = common-media
+	url = git@github.com:BugNo1/common-media.git
+[submodule "common-qml"]
+	path = common-qml
+	url = git@github.com:BugNo1/common-qml.git
+[submodule "QJoysticks"]
+	path = QJoysticks
+	url = git@github.com:alex-spataru/QJoysticks.git
