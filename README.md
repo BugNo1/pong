@@ -1,2 +1,2 @@
 # pong
-Yet another Pong game :)
+Yet another Pong game in QML :)

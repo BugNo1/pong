@@ -18,5 +18,7 @@
         <file>common-media/item-drop.wav</file>
         <file>common-media/win.wav</file>
         <file>common-media/winner.png</file>
+        <file>qml/Racket.qml</file>
+        <file>qml/Ball.qml</file>
     </qresource>
 </RCC>

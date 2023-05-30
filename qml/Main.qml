@@ -17,6 +17,7 @@ import "../common-qml/CommonFunctions.js" as Functions
 //   - show up somewhere on the middle line
 //   - collected when hit by the ball (from a specific player)
 //   - item: enlarge racket
+//   - item: speed
 
 Window {
     id: mainWindow
@@ -25,8 +26,10 @@ Window {
     visible: true
     title: qsTr("Pong")
 
+    property var rackets: [racket1, racket2]
     property var collectibleItems: []
     property var overlay
+    property int borderWidth: 10
 
     Component.onCompleted: {
         // TODO: need something like this for item function end
@@ -40,15 +43,15 @@ Window {
         id: table
         color: "royalblue"
         border.color: "white"
-        border.width: 10
+        border.width: borderWidth
         anchors.fill: parent
 
         Shape {
-            width: 10
+            width: borderWidth
             height: parent.height
             anchors.centerIn: parent
             ShapePath {
-                strokeWidth: 10
+                strokeWidth: borderWidth
                 strokeColor: "white"
                 strokeStyle: ShapePath.DashLine
                 dashPattern: [ 2, 4 ]
@@ -65,6 +68,37 @@ Window {
         minimalWaitTime: 60000
         itemActive: false
     }*/
+
+    Racket {
+        id: racket1
+        x: 50
+        y: (parent.height / 2) - (height / 2)
+        Connections {
+            target: QJoysticks
+            function onAxisChanged() {
+                racket1.yAxisValue = Functions.filterAxis(QJoysticks.getAxis(0, 1))
+            }
+        }
+    }
+
+    Racket {
+        id: racket2
+        x: parent.width - 50 - width
+        y: (parent.height / 2) - (height / 2)
+        color: "red"
+        Connections {
+            target: QJoysticks
+            function onAxisChanged() {
+                racket2.yAxisValue = Functions.filterAxis(QJoysticks.getAxis(1, 1))
+            }
+        }
+    }
+
+    Ball {
+        id: ball
+        x: parent.width - 70
+        y: parent.height / 2
+    }
 
     /*Bug {
         id: bug1
@@ -239,17 +273,16 @@ Window {
 
     function detectAllCollision() {
         // ball vs. racket collision - depends on where the ball hits the racket
-        /*for (var bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
-            for (var coinIndex = 0; coinIndex < coins.length; coinIndex++) {
-                if (coins[coinIndex].itemActive) {
-                    colliding = Functions.detectCollisionCircleCircle(bugs[bugIndex], coins[coinIndex])
-                    if (colliding) {
-                        bugs[bugIndex].bugModel.addCoin()
-                        coins[coinIndex].itemActive = false
-                    }
-                }
+        for (var racketIndex = 0; racketIndex < rackets.length; racketIndex++) {
+            var colliding = Functions.detectCollisionRectangleRectangle(rackets[racketIndex], ball)
+            if (colliding) {
+                //bugs[bugIndex].bugModel.addCoin()
+                //coins[coinIndex].itemActive = false
+                console.log("colliding!")
+            } else {
+                console.log("NOT colliding!")
             }
-        }*/
+        }
 
         // ball vs. item collision
         /*if (itemCollisionEnabled) {
