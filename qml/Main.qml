@@ -96,8 +96,6 @@ Window {
 
     Ball {
         id: ball
-        x: parent.width - 70
-        y: parent.height / 2
     }
 
     /*Bug {
@@ -199,6 +197,8 @@ Window {
         for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
             collectibleItems[itemIndex].itemActive = true
         }
+
+        ball.start()
     }
 
     function gameStopAction() {
@@ -278,9 +278,9 @@ Window {
             if (colliding) {
                 //bugs[bugIndex].bugModel.addCoin()
                 //coins[coinIndex].itemActive = false
-                console.log("colliding!")
+                //console.log("colliding!")
             } else {
-                console.log("NOT colliding!")
+                //console.log("NOT colliding!")
             }
         }
 
