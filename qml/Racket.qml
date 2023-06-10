@@ -5,23 +5,17 @@ Item {
     width: 20
     height: 100
 
+    property var model
     property string color: "black"
     property real yAxisValue: 0
 
-    Rectangle {
-        anchors.fill: parent
-        color: racket.color
+    Component.onCompleted: {
+        //bugModel.speedChanged.connect(onSpeedChanged)
     }
 
-    Timer {
-        id: animationTimer
-        interval: 20
-        running: true
-        repeat: true
-        onTriggered: {
-            if (yAxisValue != 0.0) {
-                move()
-            }
+    function timer() {
+        if (yAxisValue != 0.0) {
+            move()
         }
     }
 
@@ -34,7 +28,10 @@ Item {
         } else if (y > mainWindow.height - mainWindow.borderWidth - height) {
             y = mainWindow.height - mainWindow.borderWidth - height
         }
+    }
 
-        //hitboxY = y + height / 2
+    Rectangle {
+        anchors.fill: parent
+        color: racket.color
     }
 }

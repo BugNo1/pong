@@ -6,6 +6,7 @@
 #include "common-library/gamedata.h"
 #include "common-library/player_tablemodel_points.h"
 #include "common-library/mouse_event_filter.h"
+#include "racketmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -25,6 +26,12 @@ int main(int argc, char *argv[])
 
     QJoysticks *instance = QJoysticks::getInstance();
     engine.rootContext()->setContextProperty("QJoysticks", instance);
+
+    RacketModel* racketmodel1 = new RacketModel();
+    engine.rootContext()->setContextProperty("RacketModel1", racketmodel1);
+
+    RacketModel* racketmodel2 = new RacketModel();
+    engine.rootContext()->setContextProperty("RacketModel2", racketmodel2);
 
     PlayerTableModelPoints* playerTableModel = new PlayerTableModelPoints();
     engine.rootContext()->setContextProperty("HighscoreData", QVariant::fromValue(playerTableModel));

@@ -12,7 +12,10 @@ import "../common-qml/CommonFunctions.js" as Functions
 //TODO:
 // - copy coin indicator as generic point counter to common-qml
 // - points are: how ofter the ball hits the racket
+//    - and 50 points per ball window
+//    - maybe -50 points for ball lost (oponent points) - check that it is not lower than 0
 // - highscore are points
+// - maybe level - on each new level the ball is getting faster
 // - collectible items:
 //   - show up somewhere on the middle line
 //   - collected when hit by the ball (from a specific player)
@@ -34,6 +37,10 @@ Window {
     Component.onCompleted: {
         // TODO: need something like this for item function end
         // TODO: racket model
+        RacketModel1.ballWinsChanged.connect(onBallWinsChanged)
+        RacketModel2.ballWinsChanged.connect(onBallWinsChanged)
+
+
         //BugModel1.itemTimerFinished.connect(onItemTimerFinished)
         //BugModel2.itemTimerFinished.connect(onItemTimerFinished)
     }
@@ -71,6 +78,7 @@ Window {
 
     Racket {
         id: racket1
+        model: RacketModel1
         x: 50
         y: (parent.height / 2) - (height / 2)
         Connections {
@@ -83,6 +91,7 @@ Window {
 
     Racket {
         id: racket2
+        model: RacketModel2
         x: parent.width - 50 - width
         y: (parent.height / 2) - (height / 2)
         color: "red"
@@ -96,32 +105,9 @@ Window {
 
     Ball {
         id: ball
+        racketModel1: RacketModel1
+        racketModel2: RacketModel2
     }
-
-    /*Bug {
-        id: bug1
-        bugModel: BugModel1
-        Connections {
-            target: QJoysticks
-            function onAxisChanged() {
-                bug1.xAxisValue = Functions.filterAxis(QJoysticks.getAxis(0, 0))
-                bug1.yAxisValue = Functions.filterAxis(QJoysticks.getAxis(0, 1))
-            }
-        }
-    }
-
-    Bug {
-        id: bug2
-        bugModel: BugModel2
-        sourceFiles: ["../coinhunt-media/robobug-up-red.png", "../coinhunt-media/robobug-middle-red.png", "../coinhunt-media/robobug-down-red.png" ]
-        Connections {
-            target: QJoysticks
-            function onAxisChanged() {
-                bug2.xAxisValue = Functions.filterAxis(QJoysticks.getAxis(1, 0))
-                bug2.yAxisValue = Functions.filterAxis(QJoysticks.getAxis(1, 1))
-            }
-        }
-    }*/
 
     RowLayout {
         id: layout
@@ -132,14 +118,22 @@ Window {
         // stay on top of everything
         z: 1000
         anchors.bottomMargin: 25
-        //TODO: need two point indicators
-        /*CoinIndicator {
-            id: coinIndicator
-            bugModel1: BugModel1
-            bugModel2: BugModel2
-            imageSource: "../coinhunt-media/coin.png"
+        PointsIndicator {
+            id: racket1PointsIndicator
+            model: RacketModel1
+            player: GameData.player1
+            Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
+        }
+        /*TimeLevelIndicator {
+            id: timeLevelIndicator
             Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
         }*/
+        PointsIndicator {
+            id: racket2PointsIndicator
+            model: RacketModel2
+            player: GameData.player2
+            Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
+        }
     }
 
     Audio {
@@ -155,6 +149,7 @@ Window {
 
     // game logic
     //TODO: put properties here
+    property int activeRacketHitId: -1
 
     GameStateMachine {
         id: gameStateMachine
@@ -168,15 +163,16 @@ Window {
         console.log("Resetting game...")
 
         // initialize models
-        //BugModel1.initialize()
-        //BugModel2.initialize()
-        //GameData.initialize()
+        RacketModel1.initialize()
+        RacketModel2.initialize()
+        GameData.initialize()
 
         overlay = Qt.createQmlObject('import "../common-qml"; GameStartOverlay {}', mainWindow, "overlay")
         overlay.gameName = "Pong"
-        //overlay.player1ImageSource = "../coinhunt-media/robobug-middle.png"
-        //overlay.player2ImageSource = "../coinhunt-media/robobug-middle-red.png"
+        overlay.player1ImageSource = "../pong-media/black.png"
+        overlay.player2ImageSource = "../pong-media/red.png"
         overlay.signalStart = gameStateMachine.signalStartCountdown
+        timer.start()
     }
 
     function gameCountdownAction() {
@@ -191,7 +187,7 @@ Window {
         console.log("Starting game...")
 
         //gameTimer.start()
-        collisionDetectionTimer.start()
+        //timer.start()
 
         // activate collectible items
         for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
@@ -205,7 +201,7 @@ Window {
         console.log("Stopping game...")
 
         //gameTimer.stop()
-        collisionDetectionTimer.stop()
+        //timer.stop()
 
         // disable collectible items
         for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
@@ -256,17 +252,28 @@ Window {
         }
     }*/
 
+    function onBallWinsChanged() {
+        //TODO: delay
+        //TODO: check for game end
+        if (RacketModel1.ballWins > 0 || RacketModel2.ballWins > 0) {
+            gameStateMachine.signalStartCountdown()
+        }
+    }
+
     function checkGameEnd() {
         //TODO: one player has 11 scores (other player misses) - these are not the actual points for the highscore
     }
 
     // collision detection
     Timer {
-        id: collisionDetectionTimer
-        interval: 30
+        id: timer
+        interval: 20
         running: false
         repeat: true
         onTriggered: {
+            ball.timer()
+            racket1.timer()
+            racket2.timer()
             detectAllCollision()
         }
     }
@@ -276,11 +283,15 @@ Window {
         for (var racketIndex = 0; racketIndex < rackets.length; racketIndex++) {
             var colliding = Functions.detectCollisionRectangleRectangle(rackets[racketIndex], ball)
             if (colliding) {
-                //bugs[bugIndex].bugModel.addCoin()
-                //coins[coinIndex].itemActive = false
-                //console.log("colliding!")
+                if (activeRacketHitId != racketIndex) {
+                    ball.racketHit()
+                    rackets[racketIndex].model.addBallHit()
+                    activeRacketHitId = racketIndex
+                }
             } else {
-                //console.log("NOT colliding!")
+                if (activeRacketHitId == racketIndex) {
+                    activeRacketHitId = -1
+                }
             }
         }
 

@@ -1,4 +1,5 @@
 import QtQuick 2.15
+import "../common-qml/CommonFunctions.js" as Functions
 
 Item {
     id: ball
@@ -6,55 +7,78 @@ Item {
     height: 20
     visible: false
 
-    property int xOffset: 0
-    property int yOffset: 0
-    property int minimalSpeed: 10
-    property int speed: minimalSpeed
-    property int xDirection: dRIGHT
-    property int yDirection: dSTRAIGHT
+    property int speed: 5
+    property bool active: false
+
+    property var racketModel1
+    property var racketModel2
+
+    property int xDirection: dUNDEFINED
+    property int yDirection: dUNDEFINED
 
     readonly property int dLEFT: -1
     readonly property int dRIGHT: 1
     readonly property int dUP: -1
     readonly property int dDOWN: 1
-    readonly property int dSTRAIGHT: 0
+    readonly property int dUNDEFINED: 0
 
     function start() {
         reset()
-        xDirection = randomElement([dLEFT, dRIGHT])
+        if (xDirection === dUNDEFINED) {
+            xDirection = randomElement([dLEFT, dRIGHT])
+        }
+        yDirection = randomElement([dUP, dDOWN])
         ball.visible = true
-        animationTimer.start()
+        active = true
     }
 
     function reset() {
+        active = false
+        ball.visible = false
         x = (parent.width / 2) - (width / 2)
         y = (parent.height / 2) - (height / 2)
-        speed = minimalSpeed
-        xOffset = speed
-        yDirection = dSTRAIGHT
+    }
+
+    function racketHit() {
+        xDirection = -xDirection
+    }
+
+    function timer() {
+        if (active) {
+            checkBorderCollision()
+            move()
+        }
     }
 
     function randomElement(array) {
         return array[Math.floor(Math.random() * array.length)]
     }
 
+    function checkBorderCollision() {
+        if ((y <= mainWindow.borderWidth) || (y >= mainWindow.height - mainWindow.borderWidth - width)) {
+            yDirection = -yDirection
+        } else if (x <= mainWindow.borderWidth) {
+            if (active) {
+                racketModel2.addBallWin()
+                reset()
+                xDirection = dRIGHT
+            }
+        } else if (x >= mainWindow.width - mainWindow.borderWidth - width) {
+            if (active) {
+                racketModel1.addBallWin()
+                reset()
+                xDirection = dLEFT
+            }
+        }
+    }
+
     function move() {
-        x = x + (xOffset * xDirection)
-        y = y + (yOffset * yDirection)
+        x = x + (speed * xDirection)
+        y = y + (speed * yDirection)
     }
 
     Rectangle {
         anchors.fill: parent
         color: "white"
-    }
-
-    Timer {
-        id: animationTimer
-        interval: 20
-        running: false
-        repeat: true
-        onTriggered: {
-            move()
-        }
     }
 }

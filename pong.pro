@@ -9,7 +9,8 @@ SOURCES += \
     common-library/mouse_event_filter.cpp \
     common-library/player.cpp \
     common-library/player_tablemodel_points.cpp \
-    main.cpp
+    main.cpp \
+    racketmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -33,6 +34,7 @@ HEADERS += \
     common-library/gamedata.h \
     common-library/mouse_event_filter.h \
     common-library/player.h \
-    common-library/player_tablemodel_points.h
+    common-library/player_tablemodel_points.h \
+    racketmodel.h
 
 QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_path($$PWD/common-media/gif) $$shell_path($$OUT_PWD/);

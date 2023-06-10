@@ -20,5 +20,8 @@
         <file>common-media/winner.png</file>
         <file>qml/Racket.qml</file>
         <file>qml/Ball.qml</file>
+        <file>pong-media/black.png</file>
+        <file>pong-media/red.png</file>
+        <file>qml/PointsIndicator.qml</file>
     </qresource>
 </RCC>
