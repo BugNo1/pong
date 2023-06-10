@@ -124,10 +124,11 @@ Window {
             player: GameData.player1
             Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
         }
-        /*TimeLevelIndicator {
+        TimeLevelIndicator {
             id: timeLevelIndicator
             Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
-        }*/
+            Layout.bottomMargin: 5
+        }
         PointsIndicator {
             id: racket2PointsIndicator
             model: RacketModel2
@@ -150,6 +151,11 @@ Window {
     // game logic
     //TODO: put properties here
     property int activeRacketHitId: -1
+    property double startTime: 0
+    property double currentTime: 0
+    property int currentLevel: 0
+    property int levelDuration: 30
+    property bool restart: false
 
     GameStateMachine {
         id: gameStateMachine
@@ -161,6 +167,12 @@ Window {
 
     function gameResetAction() {
         console.log("Resetting game...")
+
+        restart = false
+        currentLevel = 1
+        currentTime = 0
+        timeLevelIndicator.setLevel(currentLevel)
+        timeLevelIndicator.setTime(currentTime)
 
         // initialize models
         RacketModel1.initialize()
@@ -189,6 +201,11 @@ Window {
         //gameTimer.start()
         //timer.start()
 
+        if (!restart) {
+            startTime = new Date().getTime()
+            gameTimer.start()
+        }
+
         // activate collectible items
         for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
             collectibleItems[itemIndex].itemActive = true
@@ -203,6 +220,8 @@ Window {
         //gameTimer.stop()
         //timer.stop()
 
+        gameTimer.stop()
+
         // disable collectible items
         for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
             collectibleItems[itemIndex].itemActive = false
@@ -215,6 +234,31 @@ Window {
 
         overlay = Qt.createQmlObject('import "../common-qml"; GameEndOverlay { gameType: GameEndOverlay.GameType.Coop }', mainWindow, "overlay")
         overlay.signalStart = gameStateMachine.signalResetGame
+    }
+
+    Timer {
+        id: gameTimer
+        interval: 100
+        running: false
+        repeat: true
+        onTriggered: {
+            currentTime = new Date().getTime() - startTime
+            updateClock()
+            updateLevel()
+        }
+    }
+
+    function updateClock() {
+        timeLevelIndicator.setTime(currentTime)
+    }
+
+    function updateLevel() {
+        var newLevel = 1 + Math.floor(currentTime / 1000 / levelDuration)
+        if (newLevel != currentLevel) {
+            timeLevelIndicator.setLevel(newLevel)
+            currentLevel = newLevel
+            // TODO: increase ball speed
+        }
     }
 
     /*Timer {
@@ -256,6 +300,7 @@ Window {
         //TODO: delay
         //TODO: check for game end
         if (RacketModel1.ballWins > 0 || RacketModel2.ballWins > 0) {
+            restart = true
             gameStateMachine.signalStartCountdown()
         }
     }

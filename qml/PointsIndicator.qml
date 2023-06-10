@@ -51,14 +51,14 @@ Item {
         RowLayout {
             id: layout
             anchors.fill: parent
-            anchors.margins: 5
 
             Text {
                 id: ballWinsText
                 font.family: Theme.mainFont
                 font.pixelSize: Theme.textFontSize
                 color: Theme.lightTextColor
-                Layout.alignment: Qt.AlignHCenter
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                Layout.bottomMargin: 5
                 text: "Wins: 0"
             }
 
@@ -67,7 +67,8 @@ Item {
                 font.family: Theme.mainFont
                 font.pixelSize: Theme.textFontSize
                 color: Theme.lightTextColor
-                Layout.alignment: Qt.AlignHCenter
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                Layout.bottomMargin: 5
                 text: "Hits: 0"
             }
         }

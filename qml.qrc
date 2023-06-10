@@ -23,5 +23,6 @@
         <file>pong-media/black.png</file>
         <file>pong-media/red.png</file>
         <file>qml/PointsIndicator.qml</file>
+        <file>common-qml/TimeLevelIndicator.qml</file>
     </qresource>
 </RCC>
