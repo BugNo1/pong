@@ -198,9 +198,6 @@ Window {
     function gameStartAction() {
         console.log("Starting game...")
 
-        //gameTimer.start()
-        //timer.start()
-
         if (!restart) {
             startTime = new Date().getTime()
             gameTimer.start()
@@ -216,9 +213,6 @@ Window {
 
     function gameStopAction() {
         console.log("Stopping game...")
-
-        //gameTimer.stop()
-        //timer.stop()
 
         gameTimer.stop()
         timer.stop()
@@ -270,41 +264,6 @@ Window {
         }
     }
 
-    /*Timer {
-        id: gameTimer
-        interval: 100
-        running: false
-        repeat: true
-        onTriggered: {
-            if (gamePause) {
-                startTime = new Date().getTime() - (levelDuration - currentTime)
-            } else {
-                currentTime = levelDuration - (new Date().getTime() - startTime)
-            }
-
-            if (currentTime <= 0) {
-                checkGameEnd()
-                startNextLevel()
-            }
-
-            if (gameTimer.running) {
-                startNextCoinRound()
-                timeLevelIndicator.setTime(currentTime)
-            }
-        }
-    }*/
-
-    /*Timer {
-        id: gamePauseTimer
-        interval: 10000
-        running: false
-        repeat: false
-        onTriggered: {
-            gamePause = false
-            onItemTimerFinished()
-        }
-    }*/
-
     function onBallWinsChanged() {
         if (RacketModel1.ballWins === pointsToWin || RacketModel2.ballWins === pointsToWin) {
             gameStateMachine.signalStopGame()
@@ -312,10 +271,6 @@ Window {
             restart = true
             gameStateMachine.signalStartCountdown()
         }
-    }
-
-    function checkGameEnd() {
-        //TODO: one player has 11 scores (other player misses) - these are not the actual points for the highscore
     }
 
     // collision detection
