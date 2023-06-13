@@ -149,13 +149,13 @@ Window {
     }
 
     // game logic
-    //TODO: put properties here
     property int activeRacketHitId: -1
     property double startTime: 0
     property double currentTime: 0
     property int currentLevel: 0
     property int levelDuration: 30
     property bool restart: false
+    property int pointsToWin: 2
 
     GameStateMachine {
         id: gameStateMachine
@@ -221,19 +221,28 @@ Window {
         //timer.stop()
 
         gameTimer.stop()
+        timer.stop()
+        ball.reset()
 
         // disable collectible items
         for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
             collectibleItems[itemIndex].itemActive = false
         }
 
-        //GameData.player1.pointsAchieved = BugModel1.coinsCollected
-        //GameData.player2.pointsAchieved = BugModel2.coinsCollected
-        //GameData.updateHighscores()
-        //GameData.saveHighscores()
+        GameData.player1.pointsAchieved = calculatePoints(RacketModel1, RacketModel2)
+        GameData.player2.pointsAchieved = calculatePoints(RacketModel2, RacketModel1)
+        GameData.updateHighscores()
+        GameData.saveHighscores()
 
-        overlay = Qt.createQmlObject('import "../common-qml"; GameEndOverlay { gameType: GameEndOverlay.GameType.Coop }', mainWindow, "overlay")
+        overlay = Qt.createQmlObject('import "../common-qml"; GameEndOverlay { gameType: GameEndOverlay.GameType.PvP; scoreType: GameEndOverlay.ScoreType.Points }', mainWindow, "overlay")
         overlay.signalStart = gameStateMachine.signalResetGame
+    }
+
+    function calculatePoints(player, opponent) {
+        var result = player.ballHits
+        result += player.ballWins * 25
+        result -= opponent.ballWins * 25
+        return result
     }
 
     Timer {
@@ -297,9 +306,9 @@ Window {
     }*/
 
     function onBallWinsChanged() {
-        //TODO: delay
-        //TODO: check for game end
-        if (RacketModel1.ballWins > 0 || RacketModel2.ballWins > 0) {
+        if (RacketModel1.ballWins === pointsToWin || RacketModel2.ballWins === pointsToWin) {
+            gameStateMachine.signalStopGame()
+        } else if (RacketModel1.ballWins > 0 || RacketModel2.ballWins > 0) {
             restart = true
             gameStateMachine.signalStartCountdown()
         }

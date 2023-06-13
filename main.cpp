@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     PlayerTableModelPoints* playerTableModel = new PlayerTableModelPoints();
     engine.rootContext()->setContextProperty("HighscoreData", QVariant::fromValue(playerTableModel));
 
-    GameData* gamedata = new GameData(playerTableModel, GameData::GameType::Coop, GameData::HighscoreType::Points);
+    GameData* gamedata = new GameData(playerTableModel, GameData::GameType::PvP, GameData::HighscoreType::Points);
     engine.rootContext()->setContextProperty("GameData", gamedata);
 
     QString gifpath = "file://" + QCoreApplication::applicationDirPath() + "/gif/";
