@@ -3,15 +3,12 @@ import QtQuick 2.15
 Item {
     id: racket
     width: 20
-    height: 100
+    height: model.size
 
     property var model
     property string color: "black"
     property real yAxisValue: 0
-
-    Component.onCompleted: {
-        //bugModel.speedChanged.connect(onSpeedChanged)
-    }
+    property int speed: model.speed
 
     function timer() {
         if (yAxisValue != 0.0) {
@@ -20,7 +17,7 @@ Item {
     }
 
     function move() {
-        var offset = 15
+        var offset = speed
         y += offset * yAxisValue
 
         if (y < mainWindow.borderWidth) {

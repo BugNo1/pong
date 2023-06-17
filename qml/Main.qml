@@ -153,9 +153,10 @@ Window {
     property double startTime: 0
     property double currentTime: 0
     property int currentLevel: 0
-    property int levelDuration: 30
+    property int levelDuration: 60
     property bool restart: false
     property int pointsToWin: 2
+    property int initialBallSpeed: 5
 
     GameStateMachine {
         id: gameStateMachine
@@ -178,6 +179,7 @@ Window {
         RacketModel1.initialize()
         RacketModel2.initialize()
         GameData.initialize()
+        ball.speed = initialBallSpeed
 
         overlay = Qt.createQmlObject('import "../common-qml"; GameStartOverlay {}', mainWindow, "overlay")
         overlay.gameName = "Pong"
@@ -260,7 +262,7 @@ Window {
         if (newLevel != currentLevel) {
             timeLevelIndicator.setLevel(newLevel)
             currentLevel = newLevel
-            // TODO: increase ball speed
+            ball.speed += 1
         }
     }
 
@@ -293,7 +295,8 @@ Window {
             var colliding = Functions.detectCollisionRectangleRectangle(rackets[racketIndex], ball)
             if (colliding) {
                 if (activeRacketHitId != racketIndex) {
-                    ball.racketHit()
+                    var hitFactor = Functions.centerYDistanceRelativeRectangleRectangle(rackets[racketIndex], ball)
+                    ball.racketHit(hitFactor)
                     rackets[racketIndex].model.addBallHit()
                     activeRacketHitId = racketIndex
                 }

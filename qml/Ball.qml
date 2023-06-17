@@ -13,8 +13,8 @@ Item {
     property var racketModel1
     property var racketModel2
 
-    property int xDirection: dUNDEFINED
-    property int yDirection: dUNDEFINED
+    property real xDirection: dUNDEFINED
+    property real yDirection: dUNDEFINED
 
     readonly property int dLEFT: -1
     readonly property int dRIGHT: 1
@@ -39,8 +39,9 @@ Item {
         y = (parent.height / 2) - (height / 2)
     }
 
-    function racketHit() {
+    function racketHit(hitFactor) {
         xDirection = -xDirection
+        yDirection = hitFactor
     }
 
     function timer() {
