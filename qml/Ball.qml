@@ -1,4 +1,5 @@
 import QtQuick 2.15
+import QtMultimedia 5.15
 import "../common-qml/CommonFunctions.js" as Functions
 
 Item {
@@ -42,6 +43,9 @@ Item {
     function racketHit(hitFactor) {
         xDirection = -xDirection
         yDirection = hitFactor
+        racketHitAudio.source = ""
+        racketHitAudio.source = "../pong-media/racket-hit.wav"
+        racketHitAudio.play()
     }
 
     function timer() {
@@ -58,6 +62,9 @@ Item {
     function checkBorderCollision() {
         if ((y <= mainWindow.borderWidth) || (y >= mainWindow.height - mainWindow.borderWidth - width)) {
             yDirection = -yDirection
+            wallHitAudio.source = ""
+            wallHitAudio.source = "../pong-media/wall-hit.wav"
+            wallHitAudio.play()
         } else if (x <= mainWindow.borderWidth) {
             if (active) {
                 racketModel2.addBallWin()
@@ -81,5 +88,15 @@ Item {
     Rectangle {
         anchors.fill: parent
         color: "white"
+    }
+
+    Audio {
+        id: racketHitAudio
+        source: "../pong-media/racket-hit.wav"
+    }
+
+    Audio {
+        id: wallHitAudio
+        source: "../pong-media/wall-hit.wav"
     }
 }

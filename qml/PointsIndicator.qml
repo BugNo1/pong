@@ -24,7 +24,6 @@ Item {
 
     function onBallWinsChanged() {
         ballWinsText.text = "Wins: " + model.ballWins
-        // play sound
     }
 
     Text {
@@ -73,9 +72,4 @@ Item {
             }
         }
     }
-
-    /*Audio {
-        id: lifeLostAudio
-        source: lifeLostAudioSource
-    }*/
 }

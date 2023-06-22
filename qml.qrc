@@ -24,5 +24,10 @@
         <file>pong-media/red.png</file>
         <file>qml/PointsIndicator.qml</file>
         <file>common-qml/TimeLevelIndicator.qml</file>
+        <file>pong-media/wall-hit.wav</file>
+        <file>pong-media/racket-hit.wav</file>
+        <file>common-qml/CollectibleItem.qml</file>
+        <file>common-media/loupe.png</file>
+        <file>common-media/transformation.wav</file>
     </qresource>
 </RCC>

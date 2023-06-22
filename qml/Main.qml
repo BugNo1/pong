@@ -30,7 +30,7 @@ Window {
     title: qsTr("Pong")
 
     property var rackets: [racket1, racket2]
-    property var collectibleItems: []
+    property var collectibleItems: [itemEnlarge]
     property var overlay
     property int borderWidth: 10
 
@@ -68,13 +68,17 @@ Window {
         }
     }
 
-    /*CollectibleItem {
-        id: itemChest
-        itemImageSource: "../common-media/treasure-chest.png"
-        hitSoundSource: ""
-        minimalWaitTime: 60000
+    CollectibleItem {
+        id: itemEnlarge
+        itemImageSource: "../common-media/loupe.png"
+        hitSoundSource: "../common-media/transformation.wav"
+        minimalWaitTime: 600
         itemActive: false
-    }*/
+        randomX: false
+        x: (parent.width / 2) - (width / 2)
+        randomY: false
+        y: (parent.height / 2) - (height / 2)
+    }
 
     Racket {
         id: racket1
@@ -150,13 +154,14 @@ Window {
 
     // game logic
     property int activeRacketHitId: -1
+    property int lastRacketHitId: -1
     property double startTime: 0
     property double currentTime: 0
     property int currentLevel: 0
     property int levelDuration: 60
     property bool restart: false
-    property int pointsToWin: 2
-    property int initialBallSpeed: 5
+    property int pointsToWin: 11
+    property int initialBallSpeed: 3
 
     GameStateMachine {
         id: gameStateMachine
@@ -210,6 +215,7 @@ Window {
             collectibleItems[itemIndex].itemActive = true
         }
 
+        lastRacketHitId = -1
         ball.start()
     }
 
@@ -299,6 +305,7 @@ Window {
                     ball.racketHit(hitFactor)
                     rackets[racketIndex].model.addBallHit()
                     activeRacketHitId = racketIndex
+                    lastRacketHitId = racketIndex
                 }
             } else {
                 if (activeRacketHitId == racketIndex) {
@@ -308,6 +315,26 @@ Window {
         }
 
         // ball vs. item collision
+        if ((lastRacketHitId != -1) && (ball.active)) {
+            for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
+                if (collectibleItems[itemIndex].visible) {
+                    colliding = Functions.detectCollisionCircleRectangle(collectibleItems[itemIndex], ball)
+                    if (colliding) {
+                        var condition
+                        var action
+                        if (itemIndex === 0) {
+                            // itemEnlarge
+                            condition = true
+                            action = function func() {rackets[lastRacketHitId].model.startSizeRun(rackets[lastRacketHitId].model.size * 2, 10000)}
+                        }
+                        collectibleItems[itemIndex].hit(condition, action)
+                    }
+                }
+            }
+        }
+
+
+
         /*if (itemCollisionEnabled) {
             for (bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
                 if (bugs[bugIndex].bugModel.enabled) {
