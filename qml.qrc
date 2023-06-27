@@ -29,5 +29,8 @@
         <file>common-qml/CollectibleItem.qml</file>
         <file>common-media/loupe.png</file>
         <file>common-media/transformation.wav</file>
+        <file>common-media/item-end.wav</file>
+        <file>common-media/turbo.png</file>
+        <file>common-media/boost.wav</file>
     </qresource>
 </RCC>

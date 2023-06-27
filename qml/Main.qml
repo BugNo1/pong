@@ -9,19 +9,6 @@ import QtQml.StateMachine 1.15 as DSM
 import "../common-qml"
 import "../common-qml/CommonFunctions.js" as Functions
 
-//TODO:
-// - copy coin indicator as generic point counter to common-qml
-// - points are: how ofter the ball hits the racket
-//    - and 50 points per ball window
-//    - maybe -50 points for ball lost (oponent points) - check that it is not lower than 0
-// - highscore are points
-// - maybe level - on each new level the ball is getting faster
-// - collectible items:
-//   - show up somewhere on the middle line
-//   - collected when hit by the ball (from a specific player)
-//   - item: enlarge racket
-//   - item: speed
-
 Window {
     id: mainWindow
     width: 1280
@@ -30,19 +17,15 @@ Window {
     title: qsTr("Pong")
 
     property var rackets: [racket1, racket2]
-    property var collectibleItems: [itemEnlarge]
+    property var collectibleItems: [itemEnlarge, itemTurbo]
     property var overlay
     property int borderWidth: 10
 
     Component.onCompleted: {
-        // TODO: need something like this for item function end
-        // TODO: racket model
         RacketModel1.ballWinsChanged.connect(onBallWinsChanged)
         RacketModel2.ballWinsChanged.connect(onBallWinsChanged)
-
-
-        //BugModel1.itemTimerFinished.connect(onItemTimerFinished)
-        //BugModel2.itemTimerFinished.connect(onItemTimerFinished)
+        RacketModel1.itemTimerFinished.connect(onItemTimerFinished)
+        RacketModel2.itemTimerFinished.connect(onItemTimerFinished)
     }
 
     // draw game canvas
@@ -72,12 +55,18 @@ Window {
         id: itemEnlarge
         itemImageSource: "../common-media/loupe.png"
         hitSoundSource: "../common-media/transformation.wav"
-        minimalWaitTime: 600
-        itemActive: false
+        minimalWaitTime: 30000
         randomX: false
         x: (parent.width / 2) - (width / 2)
-        randomY: false
-        y: (parent.height / 2) - (height / 2)
+    }
+
+    CollectibleItem {
+        id: itemTurbo
+        itemImageSource: "../common-media/turbo.png"
+        hitSoundSource: "../common-media/boost.wav"
+        minimalWaitTime: 30000
+        randomX: false
+        x: (parent.width / 2) - (width / 2)
     }
 
     Racket {
@@ -148,7 +137,7 @@ Window {
 
     function onItemTimerFinished() {
         itemTimerFinishedSound.source = ""
-        itemTimerFinishedSound.source = "../coinhunt-media/item-end.wav"
+        itemTimerFinishedSound.source = "../common-media/item-end.wav"
         itemTimerFinishedSound.play()
     }
 
@@ -161,7 +150,7 @@ Window {
     property int levelDuration: 60
     property bool restart: false
     property int pointsToWin: 11
-    property int initialBallSpeed: 3
+    property int initialBallSpeed: 4
 
     GameStateMachine {
         id: gameStateMachine
@@ -243,7 +232,8 @@ Window {
     function calculatePoints(player, opponent) {
         var result = player.ballHits
         result += player.ballWins * 25
-        result -= opponent.ballWins * 25
+        result += player.itemHits * 10
+        //result -= opponent.ballWins * 25
         return result
     }
 
@@ -325,58 +315,17 @@ Window {
                         if (itemIndex === 0) {
                             // itemEnlarge
                             condition = true
-                            action = function func() {rackets[lastRacketHitId].model.startSizeRun(rackets[lastRacketHitId].model.size * 2, 10000)}
+                            action = function func() {rackets[lastRacketHitId].model.startSizeRun(rackets[lastRacketHitId].model.size * 2, 30000)}
+                        } else if (itemIndex === 1) {
+                            // itemTurbo
+                            condition = true
+                            action = function func() {rackets[lastRacketHitId].model.startSpeedRun(40, 30000)}
                         }
                         collectibleItems[itemIndex].hit(condition, action)
+                        rackets[lastRacketHitId].model.addItemHit()
                     }
                 }
             }
         }
-
-
-
-        /*if (itemCollisionEnabled) {
-            for (bugIndex = 0; bugIndex < bugs.length; bugIndex++) {
-                if (bugs[bugIndex].bugModel.enabled) {
-                    for (var itemIndex = 0; itemIndex < collectibleItems.length; itemIndex++) {
-                        if (collectibleItems[itemIndex].visible) {
-                            colliding = Functions.detectCollisionCircleCircle(bugs[bugIndex], collectibleItems[itemIndex])
-                            if (colliding) {
-                                var condition
-                                var action
-                                if (itemIndex === 0) {
-                                   // itemSpeed
-                                   condition = true
-                                   action = function func(speed) {bugs[bugIndex].bugModel.startSpeedRun(speed, 10000)}
-                                } else if (itemIndex === 1) {
-                                    // itemEnlarge
-                                    condition = true
-                                    action = function func() {bugs[bugIndex].bugModel.startEnlargeRun(253, 200, 10000)}
-                                } else if (itemIndex === 2) {
-                                    // itemPause
-                                    condition = true
-                                    action = function func() {gamePause = true; gamePauseTimer.start()}
-                                } else if (itemIndex === 3) {
-                                    // itemClean
-                                    condition = true
-                                    action = function func() {cleanCoins(bugs[bugIndex].bugModel)}
-                                } else if (itemIndex === 4) {
-                                    // itemChest
-                                    chestCollisionCounter += 1
-                                    condition = chestCollisionCounter >= 167 // about 5 secons
-                                    action = function func() {
-                                        chestCollisionCounter = 0;
-                                        var coins = numberOfCoinsPerRound * 5;
-                                        bugs[bugIndex].bugModel.coinsCollected = bugs[bugIndex].bugModel.coinsCollected + coins;
-                                        extraCoins = extraCoins + coins
-                                    }
-                                }
-                                collectibleItems[itemIndex].hit(condition, action)
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
     }
 }

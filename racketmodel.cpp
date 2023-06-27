@@ -22,6 +22,7 @@ void RacketModel::initialize()
     setSize(m_initialSize);
     setBallHits(0);
     setBallWins(0);
+    setItemHits(0);
 }
 
 int RacketModel::ballHits()
@@ -56,6 +57,23 @@ void RacketModel::setBallWins(int wins)
 
 void RacketModel::addBallWin() {
     setBallWins(m_wins + 1);
+}
+
+int RacketModel::itemHits()
+{
+    return m_itemHits;
+}
+
+void RacketModel::setItemHits(int hits)
+{
+    if (hits != m_itemHits) {
+        m_itemHits = hits;
+        emit itemHitsChanged();
+    }
+}
+
+void RacketModel::addItemHit() {
+    setItemHits(m_itemHits + 1);
 }
 
 int RacketModel::speed()

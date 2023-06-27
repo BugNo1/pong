@@ -13,6 +13,7 @@ class RacketModel : public QObject
     Q_PROPERTY(int size READ size WRITE setSize NOTIFY sizeChanged)
     Q_PROPERTY(int ballHits READ ballHits WRITE setBallHits NOTIFY ballHitsChanged)
     Q_PROPERTY(int ballWins READ ballWins WRITE setBallWins NOTIFY ballWinsChanged)
+    Q_PROPERTY(int itemHits READ itemHits WRITE setItemHits NOTIFY itemHitsChanged)
 
 public:
     RacketModel(QObject *parent=0);
@@ -21,12 +22,16 @@ public:
     Q_INVOKABLE void initialize();
 
     int ballHits();
-    void setBallHits(int coins);
+    void setBallHits(int hits);
     Q_INVOKABLE void addBallHit();
 
     int ballWins();
     void setBallWins(int wins);
     Q_INVOKABLE void addBallWin();
+
+    int itemHits();
+    void setItemHits(int hits);
+    Q_INVOKABLE void addItemHit();
 
     int speed();
     void setSpeed(int speed);
@@ -41,6 +46,7 @@ signals:
     void sizeChanged();
     void ballHitsChanged();
     void ballWinsChanged();
+    void itemHitsChanged();
     void itemTimerFinished();
 
 public slots:
@@ -54,6 +60,7 @@ private:
     int m_initialSpeed;
     int m_size;
     int m_initialSize;
+    int m_itemHits;
     QTimer m_speedTimer;
     QTimer m_sizeTimer;
 };

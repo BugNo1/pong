@@ -8,7 +8,7 @@ Item {
     height: 20
     visible: false
 
-    property int speed: 5
+    property int speed: 0
     property bool active: false
 
     property var racketModel1
