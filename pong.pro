@@ -37,4 +37,4 @@ HEADERS += \
     common-library/player_tablemodel_points.h \
     racketmodel.h
 
-QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_path($$PWD/common-media/gif) $$shell_path($$OUT_PWD/);
+QMAKE_POST_LINK += $$QMAKE_COPY_DIR $$shell_path($$PWD/kids-media/gif) $$shell_path($$OUT_PWD/);
